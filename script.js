@@ -36,8 +36,14 @@ const createProductItemElement = ({ sku, name, image }) => {
 
 const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
 
+const cartItemHandler = ({ target }) => {
+  const fatherFigure = target.parentNode;
+  fatherFigure.removeChild(target);
+};
+
 const cartItemClickListener = (event) => {
-  // coloque seu código aqui :)
+  const item = event;
+  item.onclick = cartItemHandler;
 };
 
 const createCartItemElement = ({ sku, name, salePrice }) => {
@@ -48,24 +54,26 @@ const createCartItemElement = ({ sku, name, salePrice }) => {
   return li;
 };
 
-const itemInfoOrganizer = async (itemId) => {
+const itemInfoGetter = async (target) => {
+  const itemId = getSkuFromProductItem(target.parentNode);
   const data = await fetchItem(itemId);
   const { id, title, price } = data;
   return { sku: id, name: title, salePrice: price };
 };
 
-const cartItemAttacher = async (target) => {
-  const id = getSkuFromProductItem(target.parentNode);
-  const data = await itemInfoOrganizer(id);
+const productItemHandler = async (target) => {
+  const data = await itemInfoGetter(target);
   const cartList = document.querySelector('.cart__items');
-  cartList.appendChild(createCartItemElement(data));
+  const newCartItem = createCartItemElement(data);
+  cartList.appendChild(newCartItem);
+  cartItemClickListener(newCartItem);
 };
 
 const productItemListener = async () => {
   const productArr = document.querySelectorAll('.item');
   productArr.forEach((e) => {
     const bttn = e.querySelector('button');
-    bttn.addEventListener('click', (t) => cartItemAttacher(t.target));
+    bttn.addEventListener('click', (t) => productItemHandler(t.target));
   });
 };
 
