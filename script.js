@@ -1,3 +1,13 @@
+const resultProcessing = async () => {
+  const obj = await fetchProducts('computador');
+  const { results } = obj;
+  const arr = results.map(({ id, price, title, thumbnail }) => {
+    const list = { 'sku': id, 'salePrice': price, 'name': title, 'image': thumbnail };
+    return list
+  });
+  return arr;
+};
+
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -38,4 +48,16 @@ const createCartItemElement = ({ sku, name, salePrice }) => {
   return li;
 };
 
-window.onload = () => { };
+const elementAttacher = async () => {
+  const arr = await resultProcessing();
+  const fatherFigure = document.querySelector('.items');
+  arr.forEach((e) => {
+    const child = createProductItemElement(e);
+    fatherFigure.appendChild(child);
+  });
+};
+
+
+window.onload = async () => {
+  await elementAttacher();
+};
