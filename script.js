@@ -2,8 +2,8 @@ const resultProcessing = async () => {
   const obj = await fetchProducts('computador');
   const { results } = obj;
   const arr = results.map(({ id, price, title, thumbnail }) => {
-    const list = { 'sku': id, 'salePrice': price, 'name': title, 'image': thumbnail };
-    return list
+    const list = { sku: id, salePrice: price, name: title, image: thumbnail };
+    return list;
   });
   return arr;
 };
@@ -56,7 +56,6 @@ const elementAttacher = async () => {
     fatherFigure.appendChild(child);
   });
 };
-
 
 window.onload = async () => {
   await elementAttacher();
