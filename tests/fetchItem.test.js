@@ -14,9 +14,9 @@ describe('2 - Teste a função fetchItem', () => {
     fetchItem('MLB1615760527');
     expect(fetch).toHaveBeenCalledWith('https://api.mercadolibre.com/items/MLB1615760527');
   });
-  it('Should return an expected object', () => {
+  it('Should return an expected object', async () => {
     expect.assertions(1);
-    expect(fetchItem('MLB1615760527')).resolves.toEqual(item);
+    await expect(fetchItem('MLB1615760527')).resolves.toEqual(item);
   });
   it('Should throw an error if called with no arguments', () => {
     expect.assertions(1);

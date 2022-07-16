@@ -8,6 +8,13 @@ const resultProcessing = async () => {
   return arr;
 };
 
+const productProcessing = async (id) => {
+  const obj = fetchItem(id);
+  const newObj = { sku: obj.id, name: obj.title, salePrice: obj.price };
+  // image: obj.thumbnail
+  return newObj;
+};
+
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -46,6 +53,13 @@ const createCartItemElement = ({ sku, name, salePrice }) => {
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
   li.addEventListener('click', cartItemClickListener);
   return li;
+};
+
+const cartItemAttacher = async (target) => {
+  const id = getSkuFromProductItem(target);
+  const data = await productProcessing(id);
+  const cartList = document.querySelector('.cart__items');
+  cartList.appendChild(createCartItemElement(data));
 };
 
 const elementAttacher = async () => {
