@@ -8,13 +8,6 @@ const resultProcessing = async () => {
   return arr;
 };
 
-const productProcessing = async (id) => {
-  const obj = fetchItem(id);
-  const newObj = { sku: obj.id, name: obj.title, salePrice: obj.price };
-  // image: obj.thumbnail
-  return newObj;
-};
-
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -55,11 +48,25 @@ const createCartItemElement = ({ sku, name, salePrice }) => {
   return li;
 };
 
+const itemInfoOrganizer = async (itemId) => {
+  const data = await fetchItem(itemId);
+  const { id, title, price } = data;
+  return { sku: id, name: title, salePrice: price };
+};
+
 const cartItemAttacher = async (target) => {
-  const id = getSkuFromProductItem(target);
-  const data = await productProcessing(id);
+  const id = getSkuFromProductItem(target.parentNode);
+  const data = await itemInfoOrganizer(id);
   const cartList = document.querySelector('.cart__items');
   cartList.appendChild(createCartItemElement(data));
+};
+
+const productItemListener = async () => {
+  const productArr = document.querySelectorAll('.item');
+  productArr.forEach((e) => {
+    const bttn = e.querySelector('button');
+    bttn.addEventListener('click', (t) => cartItemAttacher(t.target));
+  });
 };
 
 const elementAttacher = async () => {
@@ -73,4 +80,5 @@ const elementAttacher = async () => {
 
 window.onload = async () => {
   await elementAttacher();
+  productItemListener();
 };
