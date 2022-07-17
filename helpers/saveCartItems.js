@@ -1,8 +1,8 @@
 const saveCartItems = (cart) => {
-  if (cart) {
+  if (cart && typeof cart !== 'number') {
     return localStorage.setItem('cartItems', cart);
   }
-  throw new Error('Error: Invalid argument');
+   return localStorage.setItem('cartItems', '');
 };
 
 if (typeof module !== 'undefined') {

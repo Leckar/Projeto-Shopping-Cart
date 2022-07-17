@@ -1,3 +1,9 @@
+const dataLoader = () => {
+  const data = getSavedCartItems();
+  if (!data) return;
+  const ol = document.querySelector('ol.cart__items');
+  ol.innerHTML = data;
+};
 const resultProcessing = async () => {
   const obj = await fetchProducts('computador');
   const { results } = obj;
@@ -6,6 +12,32 @@ const resultProcessing = async () => {
     return list;
   });
   return arr;
+};
+
+const toPrecisionArgChecker = (value) => {
+  const valueArr = value.toString().split('.');
+  console.log(valueArr);
+  const stringToCheck = valueArr[1].substring(0, 2);
+  console.log(stringToCheck);
+  if (stringToCheck !== '00') {
+    return (valueArr[0].length + 2);
+  }
+  return valueArr[0].length;
+};
+
+const valueCounter = () => {
+  const cartList = document.querySelectorAll('.cart__item');
+  const counter = document.querySelector('.total-price');
+  let value = 0;
+  if (cartList.length > 0) {
+    cartList.forEach((e) => {
+      value += parseFloat(e.id, 10);
+    });
+    const valueString = value.toPrecision(toPrecisionArgChecker(value));
+    counter.innerText = valueString;
+    return;
+  }
+  counter.innerText = '0';
 };
 
 const createProductImageElement = (imageSource) => {
@@ -25,7 +57,6 @@ const createCustomElement = (element, className, innerText) => {
 const createProductItemElement = ({ sku, name, image }) => {
   const section = document.createElement('section');
   section.className = 'item';
-
   section.appendChild(createCustomElement('span', 'item__sku', sku));
   section.appendChild(createCustomElement('span', 'item__title', name));
   section.appendChild(createProductImageElement(image));
@@ -38,17 +69,19 @@ const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').inn
 
 const cartItemHandler = ({ target }) => {
   const parent = target.parentNode;
-  parent.removeChild(target);
+  target.remove();
+  valueCounter();
   saveCartItems(parent.innerHTML);
 };
 
 const cartItemClickListener = (event) => {
   const item = event;
-  item.onclick = cartItemHandler;
+  item.addEventListener('click', cartItemHandler);
 };
 
 const createCartItemElement = ({ sku, name, salePrice }) => {
   const li = document.createElement('li');
+  li.id = `${salePrice}`;
   li.className = 'cart__item';
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
   li.addEventListener('click', cartItemClickListener);
@@ -62,20 +95,21 @@ const itemInfoGetter = async (target) => {
   return { sku: id, name: title, salePrice: price };
 };
 
-const productItemHandler = async (target) => {
+const productItemHandler = async ({ target }) => {
   const data = await itemInfoGetter(target);
   const cartList = document.querySelector('.cart__items');
   const newCartItem = createCartItemElement(data);
   cartList.appendChild(newCartItem);
+  valueCounter();
   saveCartItems(cartList.innerHTML);
   cartItemClickListener(newCartItem);
 };
 
-const productItemListener = async () => {
+const productItemListener = () => {
   const productArr = document.querySelectorAll('.item');
   productArr.forEach((e) => {
     const bttn = e.querySelector('button');
-    bttn.addEventListener('click', (t) => productItemHandler(t.target));
+    bttn.addEventListener('click', productItemHandler);
   });
 };
 
@@ -88,11 +122,11 @@ const elementAttacher = async () => {
   });
 };
 
-const windowLoadCartListener = () => {
+const windowLoadCartListener = async () => {
   const cartList = document.querySelectorAll('.cart__item');
   if (cartList && cartList.length > 0) {
     cartList.forEach((e) => {
-      e.onclick = cartItemHandler;
+      e.addEventListener('click', cartItemHandler);
     });
   }
 };
@@ -100,6 +134,7 @@ const windowLoadCartListener = () => {
 window.onload = async () => {
   await elementAttacher();
   productItemListener();
-  getSavedCartItems();
+  dataLoader();
   windowLoadCartListener();
+  valueCounter();
 };

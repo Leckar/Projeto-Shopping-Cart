@@ -8,11 +8,20 @@ describe('3 - Teste a função saveCartItems', () => {
     saveCartItems('<ol><li>Item</li></ol>');
     expect(localStorage.setItem).toHaveBeenCalled();
   });
-  it('', () => {
+  it('Should set the value of the property cartItems in localStorage as the given argument', () => {
     saveCartItems('<ol><li>Item</li></ol>');
     expect(localStorage.setItem).toHaveBeenCalledWith('cartItems', '<ol><li>Item</li></ol>');
   });
-  it('Should throw an error when called with incorrect arguments or empty arguments', () => {
-    expect(() => {saveCartItems()}).toThrow('Error: Invalid argument');
+  it('Should save an empty string as value of the cartItems property if called with invalid arguments', () => {
+    saveCartItems(124423);
+    expect(localStorage.setItem).toHaveBeenCalledWith('cartItems', '');
+  });
+  it('Should save an empty string as value of the cartItems property if called with empty arguments', () => {
+    saveCartItems();
+    expect(localStorage.setItem).toHaveBeenCalledWith('cartItems', '');
+  });
+  it('Should save an empty string as value of the cartItems property if called with falsy arguments', () => {
+    saveCartItems(null);
+    expect(localStorage.setItem).toHaveBeenCalledWith('cartItems', '');
   });
 });
