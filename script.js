@@ -37,8 +37,9 @@ const createProductItemElement = ({ sku, name, image }) => {
 const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
 
 const cartItemHandler = ({ target }) => {
-  const fatherFigure = target.parentNode;
-  fatherFigure.removeChild(target);
+  const parent = target.parentNode;
+  parent.removeChild(target);
+  saveCartItems(parent.innerHTML);
 };
 
 const cartItemClickListener = (event) => {
@@ -66,6 +67,7 @@ const productItemHandler = async (target) => {
   const cartList = document.querySelector('.cart__items');
   const newCartItem = createCartItemElement(data);
   cartList.appendChild(newCartItem);
+  saveCartItems(cartList.innerHTML);
   cartItemClickListener(newCartItem);
 };
 
@@ -79,14 +81,25 @@ const productItemListener = async () => {
 
 const elementAttacher = async () => {
   const arr = await resultProcessing();
-  const fatherFigure = document.querySelector('.items');
+  const parentNode = document.querySelector('.items');
   arr.forEach((e) => {
     const child = createProductItemElement(e);
-    fatherFigure.appendChild(child);
+    parentNode.appendChild(child);
   });
+};
+
+const windowLoadCartListener = () => {
+  const cartList = document.querySelectorAll('.cart__item');
+  if (cartList && cartList.length > 0) {
+    cartList.forEach((e) => {
+      e.onclick = cartItemHandler;
+    });
+  }
 };
 
 window.onload = async () => {
   await elementAttacher();
   productItemListener();
+  getSavedCartItems();
+  windowLoadCartListener();
 };

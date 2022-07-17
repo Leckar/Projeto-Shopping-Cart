@@ -1,7 +1,6 @@
 const saveCartItems = (cart) => {
   if (cart) {
-    const cartData = cart.toString();
-    return localStorage.setItem('cartItems', cartData);
+    return localStorage.setItem('cartItems', cart);
   }
   throw new Error('Error: Invalid argument');
 };
